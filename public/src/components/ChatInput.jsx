@@ -3,8 +3,9 @@ import { BsEmojiSmileFill } from "react-icons/bs";
 import { IoMdSend } from "react-icons/io";
 import styled from "styled-components";
 import Picker from "emoji-picker-react";
-
-export default function ChatInput({ handleSendMsg }) {
+import { Button } from "react-bootstrap";
+import Web3 from 'web3';
+export default function ChatInput({currentChat, handleSendMsg }) {
   const [msg, setMsg] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const handleEmojiPickerhideShow = () => {
@@ -25,6 +26,33 @@ export default function ChatInput({ handleSendMsg }) {
     }
   };
 
+  const sendMoney = async (event) => {
+    event.preventDefault();
+    console.log("currentChat nadeem",currentChat);
+    if (msg.length > 0) {
+      console.log("meg",msg);
+      var checkString = /^[0-9]+$/;
+      console.log("checkString",checkString.test(msg));
+      if(checkString.test(msg)){
+        const web3 = new Web3(window.ethereum);
+        const accounts = await web3.eth.getAccounts();
+        const weiValue = Web3.utils.toWei(msg, 'ether');
+        console.log("weiValue",weiValue);
+        console.log("accounts",accounts[0]);
+        await web3.eth.sendTransaction({to: currentChat.metamask, from: accounts[0], value: weiValue});
+        var msgWithEther = `Send ${msg} Ether`;
+        handleSendMsg(msgWithEther);
+      }
+      setMsg("");
+    }
+    // const web3 = new Web3(window.ethereum);
+    // const accounts = await web3.eth.getAccounts();
+    // const weiValue = Web3.utils.toWei(amount, 'ether');
+    // console.log("weiValue",weiValue);
+    // console.log("accounts",accounts[0]);
+    // await web3.eth.sendTransaction({to: walletAddress, from: accounts[0], value: weiValue});
+  }
+
   return (
     <Container>
       <div className="button-container">
@@ -36,7 +64,7 @@ export default function ChatInput({ handleSendMsg }) {
       <form className="input-container" onSubmit={(event) => sendChat(event)}>
         <input
           type="text"
-          placeholder="type your message here"
+          placeholder="type your message / account here"
           onChange={(e) => setMsg(e.target.value)}
           value={msg}
         />
@@ -44,16 +72,22 @@ export default function ChatInput({ handleSendMsg }) {
           <IoMdSend />
         </button>
       </form>
+      <div className="sendManey-container" onClick={sendMoney}>
+        <div className="sendManeyNdm">
+          <Button >Send Maney</Button>
+        </div>
+      </div>
     </Container>
   );
 }
 
 const Container = styled.div`
-  display: grid;
+  display: flex;
   align-items: center;
   grid-template-columns: 5% 95%;
   background-color: #080420;
   padding: 0 2rem;
+  justify-content: space-between;
   @media screen and (min-width: 720px) and (max-width: 1080px) {
     padding: 0 1rem;
     gap: 1rem;
@@ -99,7 +133,7 @@ const Container = styled.div`
     }
   }
   .input-container {
-    width: 100%;
+    width: 80%;
     border-radius: 2rem;
     display: flex;
     align-items: center;
@@ -140,5 +174,16 @@ const Container = styled.div`
         color: white;
       }
     }
+  }
+  .sendManey-container{
+      align-items: center;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      background-color: #9a86f3;
+      cursor: pointer;
+      button{
+        background-color: #9a86f3;
+        border: none;
+      }
   }
 `;

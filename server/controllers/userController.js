@@ -52,6 +52,7 @@ module.exports.getAllUsers = async (req, res, next) => {
       "username",
       "avatarImage",
       "_id",
+      "metamask",
     ]);
     return res.json(users);
   } catch (ex) {

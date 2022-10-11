@@ -63,21 +63,24 @@ export default function MetaMask() {
   };
   const metamaskLogin = async(event)=>{
     console.log("nadeem");
-    const web3 = (window.ethereum.enable());
-    console.log("web3",web3);
+    // const web3 = (window.ethereum.enable());
+    let ethereum = window.ethereum;
+    let web3 = window.web3;
+    if (typeof ethereum !== 'undefined') {
+    const metamaskAddress = await ethereum.enable();
+    // web3 = new Web3(ethereum);
+    console.log("metamaskAddress",metamaskAddress);
+    // web3.then(res=>{
+      // console.log("res",res);
+    if(metamaskAddress[0]){
+        console.log("metamaskAddress[0]",metamaskAddress[0]);
+        sessionStorage.setItem("metamask",metamaskAddress[0]);
+        navigate("/login");
+    }
+  }
     // const accounts = await Web3.eth.getAccounts();
     // console.log("account",accounts);
-    web3.then(res=>{
-        console.log("res",res);
-        if(res[0]){
-            console.log("res[0]",res[0]);
-            sessionStorage.setItem("metamask",res[0]);
-            navigate("/login");
-        }
-    }).catch(error=>{
-        console.log("error",error);
-        
-    })
+    
   }
 
   return (
